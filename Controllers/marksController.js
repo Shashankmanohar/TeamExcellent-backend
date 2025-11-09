@@ -96,3 +96,28 @@ export const updateMarks = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+export const getStudentMarks = async (req, res) => {
+  try {
+    const { studentName, contactNumber, dateofBirth } = req.body;
+
+    if (!studentName || !contactNumber || !dateofBirth) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const record = await marksSchema.findOne({
+      studentName: { $regex: new RegExp(`^${studentName}$`, "i") }, // case-insensitive match
+      contactNumber,
+      dateofBirth,
+    });
+
+    if (!record) {
+      return res.status(404).json({ message: "No student record found" });
+    }
+
+    res.status(200).json(record);
+
+  } catch (error) {
+    console.error("Error fetching student marks:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};

@@ -34,21 +34,36 @@ export const registerAdmin = async (req, res) => {
 export const loginAdmin = async (req, res) => {
     try {
         const { email, password } = req.body;
+        
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+        
+        // Check if JWT_SECRET is set
+        if (!JWT_SECRET) {
+            console.error('JWT_SECRET is not set in environment variables');
+            return res.status(500).json({ message: 'Server configuration error' });
+        }
+        
         // Find admin by email
         const admin = await adminSchema.findOne({ email });
         if (!admin) {
-            return res.status(400).json({ message: 'Invalid email' });
+            return res.status(400).json({ message: 'Invalid email or password' });
         }
+        
         // Compare password
         const isMatch = await bcrypt.compare(password, admin.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid password' });
+            return res.status(400).json({ message: 'Invalid email or password' });
         }
+        
         // Create JWT token and include role in the payload
         const token = jwt.sign({ id: admin._id, role: admin.role }, JWT_SECRET, { expiresIn: '1h' });
         res.status(200).json({ message: 'Login successful', token });
     }
     catch (error) {
+        console.error('Login error:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
