@@ -6,7 +6,7 @@ const marksSchema = new mongoose.Schema(
     className: { type: String, required: true },
     schoolName: { type: String, required: true },
     fatherName: { type: String, required: true },
-    dateofBirth: { type: String, required: true },
+    dateofBirth: { type: Date, required: true },
     contactNumber: { type: String, required: true },
 
     physics: { type: Number, required: true, min: 0, max: 10 },
