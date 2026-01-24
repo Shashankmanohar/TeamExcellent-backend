@@ -44,7 +44,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/marks", marksRoutes);
 
 // Start server and connect to MongoDB
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 // Initialize MongoDB connection (non-blocking)
 mongoDB().catch((error) => {
@@ -55,5 +55,4 @@ mongoDB().catch((error) => {
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log(`API available at http://localhost:${PORT}/api`);
 });
