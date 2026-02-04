@@ -4,15 +4,17 @@ import dotenv from "dotenv";
 import mongoDB from "./Config/mongoDB.js";
 import adminRoutes from "./Routes/adminRoutes.js";
 import marksRoutes from "./Routes/marksRoute.js";
+import blogRoutes from "./Routes/blogRoutes.js";
+import uploadRoutes from "./Routes/uploadRoutes.js";
 
 dotenv.config();
 const app = express();
 
 const corsOptions = {
   origin: function (origin, callback) {
-    
+
     if (!origin) return callback(null, true);
-    
+
     // List of allowed origins
     const allowedOrigins = [
       "https://teamexcellentcareerinstitute.in",
@@ -21,7 +23,7 @@ const corsOptions = {
       "http://localhost:5174",
       "http://localhost:4173",
     ];
-    
+
     // Allow if origin is in the list or allow all for development
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
@@ -39,9 +41,14 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static('uploads'));
+
 app.get("/", (req, res) => res.send("Hello from backend!"));
 app.use("/api/admin", adminRoutes);
 app.use("/api/marks", marksRoutes);
+app.use("/api/blogs", blogRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Start server and connect to MongoDB
 const PORT = process.env.PORT;
@@ -54,5 +61,5 @@ mongoDB().catch((error) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  // Server started
 });
