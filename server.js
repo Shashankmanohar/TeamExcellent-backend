@@ -11,30 +11,17 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-  origin: function (origin, callback) {
-
-    if (!origin) return callback(null, true);
-
-    // List of allowed origins
-    const allowedOrigins = [
-      "https://teamexcellentcareerinstitute.in",
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:4173",
-    ];
-
-    // Allow if origin is in the list or allow all for development
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      // For development, allow all origins
-      callback(null, true);
-    }
-  },
+  origin: [
+    "https://teamexcellentcareerinstitute.in",
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:4173",
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
