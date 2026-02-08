@@ -11,10 +11,15 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create uploads directory if it doesn't exist
+// Create uploads directory if it doesn't exist (only works in non-serverless environments)
 const uploadsDir = path.join(__dirname, '..', 'uploads', 'blogs');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+} catch (error) {
+    // Ignore error in serverless environments (Vercel) where filesystem is read-only
+    console.log('Unable to create uploads directory (serverless environment)');
 }
 
 // Configure multer for disk storage
