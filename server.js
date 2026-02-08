@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import multer from "multer";
 import dotenv from "dotenv";
 import mongoDB from "./Config/mongoDB.js";
 import adminRoutes from "./Routes/adminRoutes.js";
@@ -36,6 +37,15 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/marks", marksRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/upload", uploadRoutes);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("Unhandled Error:", err);
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ message: 'Multer upload error', error: err.message });
+  }
+  res.status(500).json({ message: 'Internal Server Error', error: err.message });
+});
 
 // Start server and connect to MongoDB
 const PORT = process.env.PORT;

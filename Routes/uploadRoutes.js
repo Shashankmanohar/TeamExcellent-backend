@@ -1,41 +1,12 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+import cloudinary from '../Config/cloudinary.js';
 import authMiddleware from '../Middleware/auth.js';
 
 const router = express.Router();
 
-// Get __dirname equivalent in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Create uploads directory if it doesn't exist (only works in non-serverless environments)
-const uploadsDir = path.join(__dirname, '..', 'uploads', 'blogs');
-try {
-    if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-} catch (error) {
-    // Ignore error in serverless environments (Vercel) where filesystem is read-only
-    console.log('Unable to create uploads directory (serverless environment)');
-}
-
-// Configure multer for disk storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadsDir);
-    },
-    filename: (req, file, cb) => {
-        // Generate unique filename: timestamp-randomstring-originalname
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        const nameWithoutExt = path.basename(file.originalname, ext);
-        const sanitizedName = nameWithoutExt.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
-        cb(null, `${sanitizedName}-${uniqueSuffix}${ext}`);
-    }
-});
+// Configure multer for memory storage (buffer)
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage: storage,
@@ -51,44 +22,66 @@ const upload = multer({
     }
 });
 
-// Upload image to local storage (Admin only)
+// Upload image to Cloudinary (Admin only)
 router.post('/image', authMiddleware(), upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: 'No image file provided' });
         }
 
-        // Generate URL for the uploaded file
-        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/blogs/${req.file.filename}`;
+        // Upload to Cloudinary using stream
+        const uploadStream = cloudinary.uploader.upload_stream(
+            {
+                folder: 'teamexcellent/blogs',
+                resource_type: 'image',
+            },
+            (error, result) => {
+                if (error) {
+                    console.error('Cloudinary upload error:', error);
+                    return res.status(500).json({
+                        message: 'Failed to upload image to cloud',
+                        error: error.message
+                    });
+                }
 
-        res.status(200).json({
-            message: 'Image uploaded successfully',
-            url: fileUrl,
-            filename: req.file.filename,
-            size: req.file.size
-        });
+                res.status(200).json({
+                    message: 'Image uploaded successfully',
+                    url: result.secure_url,
+                    public_id: result.public_id,
+                    format: result.format,
+                    width: result.width,
+                    height: result.height
+                });
+            }
+        );
+
+        // Pipe the file buffer to the upload stream
+        uploadStream.end(req.file.buffer);
+
     } catch (error) {
-        console.error('Upload error:', error);
+        console.error('Upload route error:', error);
         res.status(500).json({
-            message: 'Failed to upload image',
+            message: 'Server error during upload',
             error: error.message
         });
     }
 });
 
-// Delete image from local storage (Admin only)
-router.delete('/image/:filename', authMiddleware(), async (req, res) => {
+// Delete image from Cloudinary (Admin only)
+// Note: Frontend needs to send public_id, or we extract it from URL
+router.delete('/image', authMiddleware(), async (req, res) => {
     try {
-        const { filename } = req.params;
-        const filePath = path.join(uploadsDir, filename);
+        const { public_id } = req.body;
 
-        // Check if file exists
-        if (!fs.existsSync(filePath)) {
-            return res.status(404).json({ message: 'Image not found' });
+        if (!public_id) {
+            return res.status(400).json({ message: 'Public ID is required' });
         }
 
-        // Delete the file
-        fs.unlinkSync(filePath);
+        const result = await cloudinary.uploader.destroy(public_id);
+
+        if (result.result !== 'ok') {
+            return res.status(500).json({ message: 'Failed to delete image', result });
+        }
 
         res.status(200).json({ message: 'Image deleted successfully' });
     } catch (error) {
