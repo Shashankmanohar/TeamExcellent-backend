@@ -37,6 +37,16 @@ const blogSchema = new mongoose.Schema({
         ref: 'Admin',
         required: true
     },
+    authorName: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    tag: {
+        type: String,
+        trim: true,
+        default: ''
+    },
     published: {
         type: Boolean,
         default: false

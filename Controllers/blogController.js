@@ -5,7 +5,8 @@ export const createBlog = async (req, res) => {
     try {
         const {
             title, permalink, description, excerpt, featuredImage, categories,
-            published, datePosted, seoTitle, seoDescription, seoKeywords, seoExtraHead
+            published, datePosted, seoTitle, seoDescription, seoKeywords, seoExtraHead,
+            tag, authorName
         } = req.body;
 
         if (!title || !permalink || !description) {
@@ -26,6 +27,8 @@ export const createBlog = async (req, res) => {
             featuredImage: featuredImage || '',
             categories: categories || '',
             author: req.user.id, // From auth middleware
+            authorName: authorName || '',
+            tag: tag || '',
             published: published || false,
             datePosted: datePosted || Date.now(),
             seoTitle: seoTitle || '',
@@ -48,7 +51,8 @@ export const updateBlog = async (req, res) => {
         const { id } = req.params;
         const {
             title, permalink, description, excerpt, featuredImage, categories,
-            published, datePosted, seoTitle, seoDescription, seoKeywords, seoExtraHead
+            published, datePosted, seoTitle, seoDescription, seoKeywords, seoExtraHead,
+            tag, authorName
         } = req.body;
 
         const blog = await Blog.findById(id);
@@ -77,6 +81,8 @@ export const updateBlog = async (req, res) => {
         if (seoDescription !== undefined) blog.seoDescription = seoDescription;
         if (seoKeywords !== undefined) blog.seoKeywords = seoKeywords;
         if (seoExtraHead !== undefined) blog.seoExtraHead = seoExtraHead;
+        if (tag !== undefined) blog.tag = tag;
+        if (authorName !== undefined) blog.authorName = authorName;
 
         await blog.save();
         res.status(200).json({ message: 'Blog updated successfully', blog });
