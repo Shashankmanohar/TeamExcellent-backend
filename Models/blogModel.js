@@ -44,6 +44,25 @@ const blogSchema = new mongoose.Schema({
     datePosted: {
         type: Date,
         default: Date.now
+    },
+    seoTitle: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    seoDescription: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    seoKeywords: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    seoExtraHead: {
+        type: String,
+        default: ''
     }
 }, { timestamps: true });
 

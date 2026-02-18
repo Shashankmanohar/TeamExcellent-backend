@@ -3,7 +3,10 @@ import Blog from "../Models/blogModel.js";
 // Create a new blog post (Admin only)
 export const createBlog = async (req, res) => {
     try {
-        const { title, permalink, description, excerpt, featuredImage, categories, published, datePosted } = req.body;
+        const {
+            title, permalink, description, excerpt, featuredImage, categories,
+            published, datePosted, seoTitle, seoDescription, seoKeywords, seoExtraHead
+        } = req.body;
 
         if (!title || !permalink || !description) {
             return res.status(400).json({ message: 'Title, permalink, and description are required' });
@@ -24,7 +27,11 @@ export const createBlog = async (req, res) => {
             categories: categories || '',
             author: req.user.id, // From auth middleware
             published: published || false,
-            datePosted: datePosted || Date.now()
+            datePosted: datePosted || Date.now(),
+            seoTitle: seoTitle || '',
+            seoDescription: seoDescription || '',
+            seoKeywords: seoKeywords || '',
+            seoExtraHead: seoExtraHead || ''
         });
 
         await newBlog.save();
@@ -39,7 +46,10 @@ export const createBlog = async (req, res) => {
 export const updateBlog = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, permalink, description, excerpt, featuredImage, categories, published, datePosted } = req.body;
+        const {
+            title, permalink, description, excerpt, featuredImage, categories,
+            published, datePosted, seoTitle, seoDescription, seoKeywords, seoExtraHead
+        } = req.body;
 
         const blog = await Blog.findById(id);
         if (!blog) {
@@ -63,6 +73,10 @@ export const updateBlog = async (req, res) => {
         if (categories !== undefined) blog.categories = categories;
         if (published !== undefined) blog.published = published;
         if (datePosted) blog.datePosted = datePosted;
+        if (seoTitle !== undefined) blog.seoTitle = seoTitle;
+        if (seoDescription !== undefined) blog.seoDescription = seoDescription;
+        if (seoKeywords !== undefined) blog.seoKeywords = seoKeywords;
+        if (seoExtraHead !== undefined) blog.seoExtraHead = seoExtraHead;
 
         await blog.save();
         res.status(200).json({ message: 'Blog updated successfully', blog });
