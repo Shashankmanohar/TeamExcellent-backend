@@ -29,6 +29,19 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
+// Database Connection Middleware
+const connectDB = async (req, res, next) => {
+  try {
+    await mongoDB();
+    next();
+  } catch (error) {
+    console.error("Database connection middleware error:", error.message);
+    res.status(500).json({ message: "Database connection failed", error: error.message });
+  }
+};
+
+app.use(connectDB);
+
 // Serve static files from uploads directory
 app.use('/uploads', express.static('uploads'));
 
@@ -47,19 +60,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Internal Server Error', error: err.message });
 });
 
-// Start server and connect to MongoDB
-const PORT = process.env.PORT;
+// Start server (only for local development, PORT is set in .env)
+const PORT = process.env.PORT || 5000;
 
-// Initialize MongoDB connection (non-blocking)
-mongoDB().catch((error) => {
-  console.error("MongoDB connection error:", error.message);
-  console.error("Server will continue to run, but database operations may fail.");
-});
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Only call listen if not in a serverless environment (checking for Vercel)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
 
 // Export for Vercel serverless deployment
 export default app;

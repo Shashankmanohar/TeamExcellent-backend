@@ -76,9 +76,6 @@ const blogSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-// Index for faster permalink lookups
-blogSchema.index({ permalink: 1 });
-
 // Index for filtering published blogs
 blogSchema.index({ published: 1, datePosted: -1 });
 
