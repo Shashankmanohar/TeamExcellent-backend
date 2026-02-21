@@ -7,6 +7,7 @@ import adminRoutes from "./Routes/adminRoutes.js";
 import marksRoutes from "./Routes/marksRoute.js";
 import blogRoutes from "./Routes/blogRoutes.js";
 import uploadRoutes from "./Routes/uploadRoutes.js";
+import enrollmentRoutes from "./Routes/enrollmentRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -50,6 +51,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/marks", marksRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/enrollments", enrollmentRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

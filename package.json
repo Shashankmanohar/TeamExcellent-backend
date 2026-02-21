@@ -1,7 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "dev": "npm run server"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
