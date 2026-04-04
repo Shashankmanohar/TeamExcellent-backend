@@ -18,20 +18,7 @@ const enrollmentSchema = new mongoose.Schema({
     },
     course: {
         type: String,
-        required: [true, 'Course selection is required'],
-        enum: [
-            'Class 6',
-            'Class 7',
-            'Class 8',
-            'Class 9',
-            'Class 10',
-            'Class 11 Studying (for Engineering)',
-            'Class 11 Studying (for Medical)',
-            'Class 12 Studying (for Engineering)',
-            'Class 12 Studying (for Medical)',
-            'Class 12 Pass (for Engineering)',
-            'Class 12 Pass (for Medical)'
-        ]
+        required: [true, 'Course selection is required']
     },
     city: {
         type: String,
