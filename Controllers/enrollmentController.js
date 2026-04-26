@@ -7,9 +7,31 @@ export const createEnrollment = async (req, res) => {
     try {
         const { fullName, mobileNumber, email, course, city, query } = req.body;
 
-        // Basic validation in controller as well
+        // Validation patterns
+        const nameRegex = /^[a-zA-Z\s]{3,50}$/;
+        const mobileRegex = /^[6-9]\d{9}$/;
+        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        const cityRegex = /^[a-zA-Z\s]{2,50}$/;
+
+        // Basic validation
         if (!fullName || !mobileNumber || !course || !city) {
-            return res.status(400).json({ message: 'Please fill all required fields' });
+            return res.status(400).json({ message: 'Please fill all required fields (Name, Mobile, Course, City)' });
+        }
+
+        if (!nameRegex.test(fullName)) {
+            return res.status(400).json({ message: 'Invalid name. Use only letters (3-50 chars).' });
+        }
+
+        if (!mobileRegex.test(mobileNumber)) {
+            return res.status(400).json({ message: 'Invalid mobile number. Must be a 10-digit number.' });
+        }
+
+        if (email && !emailRegex.test(email)) {
+            return res.status(400).json({ message: 'Invalid email address format.' });
+        }
+
+        if (!cityRegex.test(city)) {
+            return res.status(400).json({ message: 'Invalid city name.' });
         }
 
         const enrollment = new Enrollment({
