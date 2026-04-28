@@ -70,6 +70,16 @@ const blogSchema = new mongoose.Schema({
         trim: true,
         default: ''
     },
+    ogTitle: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    ogDescription: {
+        type: String,
+        trim: true,
+        default: ''
+    },
     seoExtraHead: {
         type: String,
         default: ''
