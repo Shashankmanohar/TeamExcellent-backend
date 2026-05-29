@@ -9,6 +9,7 @@ import blogRoutes from "./Routes/blogRoutes.js";
 import uploadRoutes from "./Routes/uploadRoutes.js";
 import enrollmentRoutes from "./Routes/enrollmentRoutes.js";
 import reviewRoutes from "./Routes/reviewRoute.js";
+import careerRoutes from "./Routes/careerRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -54,6 +55,7 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/careers", careerRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
