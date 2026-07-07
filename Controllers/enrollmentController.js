@@ -82,3 +82,24 @@ export const deleteEnrollment = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+// @desc    Update an enrollment status
+// @route   PATCH /api/enrollments/:id/status
+// @access  Private/Admin
+export const updateEnrollmentStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const enrollment = await Enrollment.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true }
+        );
+        if (!enrollment) {
+            return res.status(404).json({ message: 'Enrollment not found' });
+        }
+        res.status(200).json({ message: 'Status updated successfully', enrollment });
+    } catch (error) {
+        console.error('Update status error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};

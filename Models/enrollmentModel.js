@@ -18,7 +18,7 @@ const enrollmentSchema = new mongoose.Schema({
         trim: true,
         validate: {
             validator: function(v) {
-                return /^[6-9]\d{9}$/.test(v);
+                return /^\d{10}$/.test(v);
             },
             message: props => `${props.value} is not a valid 10-digit mobile number!`
         }
@@ -53,6 +53,11 @@ const enrollmentSchema = new mongoose.Schema({
     },
     query: {
         type: String,
+        trim: true
+    },
+    status: {
+        type: String,
+        default: 'Pending',
         trim: true
     }
 }, {
