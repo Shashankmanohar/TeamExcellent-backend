@@ -105,9 +105,9 @@ export const getStudentMarks = async (req, res) => {
     }
 
     const record = await marksSchema.findOne({
-      studentName: { $regex: new RegExp(`^${studentName}$`, "i") }, // case-insensitive match
-      contactNumber,
-      dateofBirth,
+      studentName: { $regex: new RegExp(`^${studentName.trim()}$`, "i") }, // case-insensitive match
+      contactNumber: contactNumber.trim(),
+      dateofBirth: dateofBirth.trim(),
     });
 
     if (!record) {
